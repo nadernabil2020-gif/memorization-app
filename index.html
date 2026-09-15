@@ -440,6 +440,20 @@ async function boot(){
   await loadLevels();
   if (window.location.hash === '#admin'){
     state.viaAdminLink = true;
+    state.screen = 'loading';
+    render();
+    // wait once for Firebase Auth to restore any existing session from this browser
+    const existingAdmin = await new Promise(resolve => {
+      const unsub = onAuthStateChanged(auth, (u) => { unsub(); resolve(u); });
+    });
+    if (existingAdmin){
+      state.adminUnlocked = true;
+      state.screen = 'admin-list';
+      await loadAllUsers();
+      await refreshPendingCount();
+      render();
+      return;
+    }
     state.screen = 'admin-login';
     render();
     return;
