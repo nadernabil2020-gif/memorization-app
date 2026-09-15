@@ -192,7 +192,7 @@ import {
   getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, collectionGroup, query, where, orderBy, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
-  getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
+  getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
@@ -206,6 +206,7 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
+try{ await setPersistence(auth, browserLocalPersistence); }catch(e){ console.error('setPersistence failed:', e); }
 let currentAdminUser = null;
 onAuthStateChanged(auth, (u) => { currentAdminUser = u; });
 
