@@ -189,7 +189,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, collectionGroup, query, where
+  getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, collectionGroup, query, where, orderBy, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
   getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
@@ -285,9 +285,9 @@ async function markMemorized(userId, levelId){
   const ref = doc(db, 'progress', userId, 'levels', String(levelId));
   const snap = await getDoc(ref);
   if (!snap.exists()){
-    await setDoc(ref, { memorized: true, reviewed: false, points: 0 });
+    await setDoc(ref, { memorized: true, reviewed: false, points: 0, memorizedAt: serverTimestamp() });
   } else {
-    await updateDoc(ref, { memorized: true });
+    await updateDoc(ref, { memorized: true, memorizedAt: serverTimestamp() });
   }
 }
 async function adminReviewLevel(userId, levelId, points){
@@ -300,7 +300,13 @@ async function fetchPendingReviews(){
   const items = [];
   snap.forEach(d => {
     const userId = d.ref.parent.parent.id;
-    items.push({ userId, levelId: Number(d.id) });
+    const data = d.data();
+    items.push({ userId, levelId: Number(d.id), memorizedAt: data.memorizedAt || null });
+  });
+  items.sort((a,b) => {
+    const ta = (a.memorizedAt && a.memorizedAt.toMillis) ? a.memorizedAt.toMillis() : 0;
+    const tb = (b.memorizedAt && b.memorizedAt.toMillis) ? b.memorizedAt.toMillis() : 0;
+    return ta - tb;
   });
   return items;
 }
@@ -1002,14 +1008,17 @@ function renderAdminPending(){
   const items = state.pendingItems || [];
   const body = items.length === 0
     ? `<div class="empty">مفيش حد بانتظار التسميع دلوقتي 🎉</div>`
-    : items.map(it => {
+    : items.map((it, idx) => {
         const level = LEVELS.find(l => l.id === it.levelId);
         const userRec = (state.allUsers||[]).find(u => u.userId === it.userId);
         const name = userRec ? userRec.user.name : it.userId;
         const phone = userRec ? userRec.user.phone : '';
         return `
           <div class="user-row" data-uid="${it.userId}">
-            <div class="nm">${name}</div>
+            <div class="lvl-top">
+              <div class="nm">${idx+1}. ${name}</div>
+              <span class="lvl-status st-current">الدور ${idx+1}</span>
+            </div>
             <div class="ph">${phone}</div>
             <div class="prog">جاهز يتسمّع في: ${level ? level.title : ('مستوى #' + it.levelId)}</div>
           </div>
