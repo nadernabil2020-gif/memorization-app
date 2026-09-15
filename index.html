@@ -313,10 +313,17 @@ async function fetchPendingReviews(){
 async function refreshPendingCount(){
   try{
     const items = await fetchPendingReviews();
+    state.pendingItems = items;
     state.pendingCount = items.length;
   }catch(e){
     console.error('refreshPendingCount failed:', e);
   }
+}
+function formatDateTime(ts){
+  if (!ts || !ts.toDate) return '';
+  try{
+    return ts.toDate().toLocaleString('ar-EG', { dateStyle: 'short', timeStyle: 'short' });
+  }catch(e){ return ''; }
 }
 
 /* ---------- Admin auth ---------- */
@@ -937,14 +944,32 @@ function renderAdminList(){
   const countryCounts = {};
   (state.allUsers||[]).forEach(u => { const c = u.user.country || 'غير محدد'; countryCounts[c] = (countryCounts[c]||0)+1; });
   const countryStats = Object.entries(countryCounts).map(([c,n]) => `${c}: ${n}`).join(' &nbsp;•&nbsp; ');
+
+  const pending = state.pendingItems || [];
+  const pendingBody = pending.length === 0
+    ? `<div class="empty">مفيش حد بانتظار التسميع دلوقتي 🎉</div>`
+    : pending.map((it, idx) => {
+        const level = LEVELS.find(l => l.id === it.levelId);
+        const userRec = (state.allUsers||[]).find(u => u.userId === it.userId);
+        const name = userRec ? userRec.user.name : it.userId;
+        const phone = userRec ? userRec.user.phone : '';
+        const when = formatDateTime(it.memorizedAt);
+        return `
+          <div class="user-row" data-uid="${it.userId}" style="border-color:#c9782f;">
+            <div class="lvl-top">
+              <div class="nm">${idx+1}. ${name}</div>
+              <span class="lvl-status st-pending">${level ? level.title : ('مستوى #'+it.levelId)}</span>
+            </div>
+            <div class="ph">${phone}</div>
+            ${when ? `<div class="ph" style="margin-top:4px;">سجّل: ${when}</div>` : ''}
+          </div>
+        `;
+      }).join('');
+
   return `
     ${state.viaAdminLink ? `<div class="brand"><div class="seal">🔑</div><h1>لوحة المشرف</h1><p>رحلة الحفظ — إدارة عن بُعد</p></div>` : ''}
     <div class="screen">
       ${state.viaAdminLink ? '' : '<div class="back-row"><button id="back-path3">← رجوع</button></div>'}
-      <button class="btn btn-green" id="go-pending" style="margin-bottom:16px; position:relative;">
-        بانتظار التسميع
-        ${state.pendingCount ? `<span style="background:#8B4A3B; color:#fff; border-radius:20px; padding:2px 10px; margin-right:8px; font-size:.8rem;">${state.pendingCount}</span>` : ''}
-      </button>
       <div class="btn-row" style="margin-bottom:12px;">
         <button class="btn btn-outline" id="go-manage-levels">إدارة المستويات</button>
         <button class="btn btn-outline" id="refresh-users">تحديث</button>
@@ -957,6 +982,10 @@ function renderAdminList(){
         <div class="who">إجمالي المسجلين: ${(state.allUsers||[]).length}</div>
         <div class="hint" style="margin:0;">${countryStats || 'مفيش بيانات دول لسه'}</div>
       </div>
+
+      <div class="section-title" style="color:#e0a860; border-color:#c9782f;">بانتظار التسميع (${pending.length})</div>
+      ${pendingBody}
+
       <div class="field" style="margin-top:16px;"><input id="admin-search" placeholder="دور بالاسم / الرقم / الدولة..." value="${filterText}"></div>
       <div class="section-title">المستخدمون المسجلون</div>
       ${body}
@@ -967,11 +996,6 @@ function attachAdminListEvents(){
   const backBtn = document.getElementById('back-path3');
   if (backBtn) backBtn.onclick = () => { state.screen = state.user ? 'path' : 'register'; render(); };
   document.getElementById('go-manage-levels').onclick = () => { state.editingLevelId = null; state.screen = 'admin-levels'; render(); };
-  document.getElementById('go-pending').onclick = async () => {
-    state.pendingItems = undefined;
-    state.screen = 'admin-pending';
-    render();
-  };
   document.getElementById('refresh-users').onclick = async () => {
     const btn = document.getElementById('refresh-users');
     btn.disabled = true; btn.textContent = 'جاري التحديث...';
