@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رحلة الحفظ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #201811;
+    --bg-2: #2b2015;
+    --parchment: #EDE0BF;
+    --parchment-2: #F5EBD0;
+    --ink: #2A1F14;
+    --ink-soft: #5A4A36;
+    --gold: #B8862F;
+    --gold-bright: #D6A94B;
+    --green: #3F6B4A;
+    --green-bright: #4E8059;
+    --muted: #8A7659;
+    --locked: #5c5346;
+    --danger: #8B4A3B;
+    --radius: 4px;
+  }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:
+      radial-gradient(ellipse at 20% -10%, #3a2c1a 0%, transparent 55%),
+      var(--bg);
+    color: var(--parchment);
+    font-family: 'Cairo', sans-serif;
+    min-height: 100vh;
+  }
+  #app{ max-width: 560px; margin: 0 auto; min-height: 100vh; display:flex; flex-direction:column; }
+
+  .brand{ padding: 28px 20px 18px; text-align:center; border-bottom: 1px solid #3a2f22; }
+  .brand .seal{
+    width:46px;height:46px;margin:0 auto 10px; overflow:hidden;
+    border:1.5px solid var(--gold); border-radius:50%;
+    display:flex;align-items:center;justify-content:center; font-size:1.3rem;
+  }
+  .brand h1{ font-family:'Amiri', serif; font-size: 1.6rem; margin: 0; color: var(--parchment-2); font-weight:700; }
+  .brand p{ margin: 6px 0 0; font-size: .82rem; color: var(--muted); letter-spacing: .3px; }
+
+  .screen{ padding: 22px 18px 60px; flex:1; }
+
+  .field{ margin-bottom: 16px; }
+  .field label{ display:block; font-size:.85rem; color: var(--muted); margin-bottom:6px; }
+  .field input, .field textarea{
+    width:100%; padding:13px 14px; border-radius: var(--radius);
+    border: 1px solid #4a3d2b; background: #241b12; color: var(--parchment-2);
+    font-family:'Cairo'; font-size: .95rem; outline:none;
+  }
+  .field textarea{ min-height:110px; resize:vertical; line-height:1.8; }
+  .field input:focus, .field textarea:focus{ border-color: var(--gold); }
+  .field select{
+    width:100%; padding:13px 14px; border-radius: var(--radius);
+    border: 1px solid #4a3d2b; background: #241b12; color: var(--parchment-2);
+    font-family:'Cairo'; font-size: .95rem; outline:none; appearance:none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%23B8862F' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position: left 14px center;
+  }
+  .field select:focus{ border-color: var(--gold); }
+  .phone-row{ display:flex; gap:8px; }
+  .phone-row .code-badge{
+    flex: 0 0 auto; min-width:66px; display:flex; align-items:center; justify-content:center;
+    padding:0 10px; border-radius: var(--radius); border:1px solid #4a3d2b;
+    background:#2b2015; color: var(--gold-bright); font-weight:700; font-size:.9rem;
+  }
+  .phone-row input{ flex:1; }
+  .avatar-tabs{ display:flex; gap:8px; margin-bottom:10px; }
+  .avatar-tab{ flex:1; padding:9px; border-radius: var(--radius); border:1px solid #4a3d2b; background:#241b12; color:var(--muted); font-family:'Cairo'; font-size:.82rem; cursor:pointer; }
+  .avatar-tab.active{ border-color:var(--gold); color:var(--gold-bright); background:#2b2015; }
+  .avatar-grid{ display:flex; flex-wrap:wrap; gap:10px; margin-top:8px; }
+  .avatar-opt{ width:50px;height:50px; border-radius:50%; display:flex;align-items:center;justify-content:center; font-size:1.4rem; border:2px solid #4a3d2b; background:#241b12; cursor:pointer; }
+  .avatar-opt.selected{ border-color: var(--gold); background:#3a2c17; }
+  .avatar-hint{ font-size:.72rem; color:var(--muted); margin-top:6px; }
+  .photo-preview{ margin-top:10px; display:flex; align-items:center; gap:10px; }
+  .photo-preview img{ width:56px;height:56px;border-radius:50%; object-fit:cover; border:2px solid var(--gold); }
+  .radio-row{ display:flex; gap:10px; }
+  .radio-opt{ flex:1; padding:11px; text-align:center; border-radius: var(--radius); border:1px solid #4a3d2b; background:#241b12; color: var(--parchment-2); font-size:.88rem; cursor:pointer; }
+  .radio-opt.selected{ border-color: var(--gold); background:#3a2c17; color: var(--gold-bright); }
+
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    width:100%; padding: 14px 18px; border-radius: var(--radius);
+    border: none; font-family:'Cairo'; font-weight:700; font-size: .95rem;
+    cursor:pointer; transition: transform .12s ease, filter .12s ease;
+  }
+  .btn:active{ transform: scale(.98); }
+  .btn-gold{ background: linear-gradient(180deg, var(--gold-bright), var(--gold)); color:#241b0c; }
+  .btn-gold:hover{ filter:brightness(1.06); }
+  .btn-outline{ background: transparent; border:1px solid var(--muted); color: var(--parchment); }
+  .btn-green{ background: linear-gradient(180deg, var(--green-bright), var(--green)); color:#eafbee; }
+  .btn-danger{ background: transparent; border:1px solid var(--danger); color:#d99686; }
+  .btn-small{ width:auto; padding:8px 14px; font-size:.8rem; }
+  .btn-row{ display:flex; gap:8px; }
+  .btn-row .btn{ flex:1; }
+
+  .hint{ font-size:.78rem; color: var(--muted); margin-top: 4px; line-height:1.6; }
+  .error{ color:#e08a75; font-size:.82rem; margin-top:8px; }
+
+  .stats-bar{
+    display:flex; justify-content:space-between; align-items:center;
+    background:#241b12; border:1px solid #3a2f22; border-radius: var(--radius);
+    padding: 14px 16px; margin-bottom: 22px;
+  }
+  .stats-bar .who{ font-size:.9rem; color: var(--parchment-2); font-weight:600; }
+  .stats-bar .pts{ text-align:left; }
+  .stats-bar .pts b{ color: var(--gold-bright); font-size:1.1rem; }
+  .stats-bar .pts span{ display:block; font-size:.7rem; color:var(--muted); }
+
+  .path{ position:relative; padding-right: 22px; }
+  .path::before{
+    content:''; position:absolute; right:8px; top:6px; bottom:6px; width:2px;
+    background: repeating-linear-gradient(180deg, var(--muted) 0 6px, transparent 6px 12px);
+    opacity:.5;
+  }
+  .level-card{
+    position:relative; background: var(--parchment); color: var(--ink);
+    border-radius: var(--radius); padding:16px 16px; margin-bottom:14px;
+    border: 1px solid #d8c692; cursor:pointer;
+  }
+  .level-card::before{
+    content:''; position:absolute; right:-22px; top:22px; width:10px;height:10px;
+    border-radius:50%; background: var(--gold); border:2px solid var(--bg);
+  }
+  .level-card.locked{ background:#2b2419; color: var(--muted); border-color:#4a3f2c; cursor:not-allowed; }
+  .level-card.locked::before{ background: var(--locked); }
+  .level-card.done::before{ background: var(--green-bright); }
+  .lvl-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+  .lvl-title{ font-family:'Amiri', serif; font-weight:700; font-size:1.1rem; }
+  .lvl-ref{ font-size:.78rem; color: var(--ink-soft); margin-top:2px; }
+  .level-card.locked .lvl-ref{ color:#6b6250; }
+  .lvl-status{ font-size:.7rem; padding:4px 9px; border-radius: 20px; white-space:nowrap; background:#00000012; font-weight:700; }
+  .st-locked{ background:#00000022; color:#c9bfa9; }
+  .st-current{ background:#B8862F; color:#241b0c; }
+  .st-pending{ background:#c9782f; color:#2a1500; }
+  .st-done{ background: var(--green); color:#eafbee; }
+  .lvl-pts{ margin-top:10px; font-size:.8rem; color: var(--ink-soft); }
+  .level-card.locked .lvl-pts{ color:#7a7059; }
+
+  .back-row{ display:flex; align-items:center; gap:8px; margin-bottom:16px; justify-content:space-between; }
+  .back-row button{ background:none;border:none;color:var(--parchment); cursor:pointer; font-family:'Cairo'; font-size:.9rem; display:flex; align-items:center; gap:6px; }
+  .verse-card{ background: var(--parchment); color: var(--ink); border-radius: var(--radius); padding: 22px 20px; margin-bottom:18px; border:1px solid #d8c692; }
+  .verse-ref{ font-size:.8rem; color: var(--gold); font-weight:700; margin-bottom:10px; }
+  .verse-text{ font-family:'Amiri', serif; font-size:1.3rem; line-height:2.1; text-align:right; white-space:pre-line; }
+  .section-title{ font-family:'Amiri', serif; font-size:1.05rem; color: var(--parchment-2); margin: 22px 0 10px; padding-right:12px; border-right:3px solid var(--gold); }
+
+  .memorize-box{ background:#241b12; border:1px dashed var(--muted); border-radius: var(--radius); padding:16px; margin-top:18px; text-align:center; }
+  .memorize-box p{ font-size:.85rem; color: var(--muted); margin:0 0 12px; line-height:1.7; }
+
+  .status-banner{ text-align:center; padding:14px; border-radius: var(--radius); margin-top:16px; font-size:.88rem; font-weight:600; }
+  .status-banner.pending{ background:#3a2a14; color:#e0a860; border:1px solid #6b4e26; }
+  .status-banner.done{ background:#1e3324; color:#8fd6a0; border:1px solid #3f6b4a; }
+
+  .gift-card{ margin-top:16px; text-align:center; padding:22px 16px; background: linear-gradient(180deg, #2b2015, #241b12); border:1px solid var(--gold); border-radius: var(--radius); }
+  .gift-card .ring{ width:56px;height:56px;border-radius:50%;border:2px solid var(--gold-bright); margin:0 auto 10px; display:flex; align-items:center; justify-content:center; }
+  .gift-card h4{ font-family:'Amiri', serif; color: var(--gold-bright); margin:0 0 6px; font-size:1.05rem; }
+  .gift-card p{ font-size:.8rem; color: var(--muted); margin:0; line-height:1.7; }
+
+  .admin-link{ text-align:center; margin-top:26px; }
+  .admin-link button{ background:none;border:none;color:#5a4a36; font-size:.72rem; cursor:pointer; }
+  .user-row{ background:#241b12; border:1px solid #3a2f22; border-radius: var(--radius); padding:12px 14px; margin-bottom:10px; cursor:pointer; }
+  .user-row .nm{ font-weight:700; color: var(--parchment-2); font-size:.92rem; }
+  .user-row .ph{ font-size:.76rem; color: var(--muted); margin-top:2px; }
+  .user-row .prog{ font-size:.75rem; color: var(--gold-bright); margin-top:6px; }
+
+  .admin-level{ background:#241b12; border:1px solid #3a2f22; border-radius: var(--radius); padding:14px; margin-bottom:10px; }
+  .admin-level .t{ font-size:.9rem; font-weight:700; color: var(--parchment-2); margin-bottom:4px; }
+  .admin-level .s{ font-size:.75rem; color: var(--muted); margin-bottom:10px; }
+  .row2{ display:flex; gap:10px; }
+  .row2 .field{ flex:1; margin-bottom:0; }
+
+  .cfg-level{ background:#241b12; border:1px solid #3a2f22; border-radius: var(--radius); padding:14px; margin-bottom:10px; }
+  .cfg-level .t{ font-size:.95rem; font-weight:700; color: var(--parchment-2); }
+  .cfg-level .r{ font-size:.75rem; color: var(--gold); margin:2px 0 6px; }
+  .cfg-level .c{ font-size:.8rem; color: var(--muted); line-height:1.6; margin-bottom:8px; white-space:pre-line; }
+  .cfg-level .meta{ font-size:.75rem; color: var(--gold-bright); margin-bottom:10px; }
+
+  .empty{ text-align:center; color: var(--muted); font-size:.85rem; padding:30px 10px; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBCo5_QcG7k44xBMXUCbSEGc6PixFrtMlI",
+  authDomain: "topteam-notifications.firebaseapp.com",
+  projectId: "topteam-notifications",
+  storageBucket: "topteam-notifications.firebasestorage.app",
+  messagingSenderId: "738475717278",
+  appId: "1:738475717278:web:e13fc118489280e8acc18f"
+};
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
+const auth = getAuth(firebaseApp);
+let currentAdminUser = null;
+onAuthStateChanged(auth, (u) => { currentAdminUser = u; });
+
+/* PIN hashing (SHA-256) so raw PINs are never stored in the database */
+async function hashPin(pin){
+  try{
+    const enc = new TextEncoder().encode(pin);
+    const buf = await crypto.subtle.digest('SHA-256', enc);
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  }catch(e){
+    console.error('hashPin failed, falling back to plain (less secure):', e);
+    return 'plain:' + pin;
+  }
+}
+
+/* Thin wrapper mimicking the old window.storage API, now backed by real
+   Firestore collections: users/{id}, meta/levels, and localStorage for the
+   "remember this device" pointer. Progress has its own dedicated functions
+   below (fetchProgress / markMemorized / adminReviewLevel) so security rules
+   can tell participant writes and admin writes apart. */
+window.storage = {
+  async get(key, shared){
+    if (key === 'my-user-id'){
+      let v = null;
+      try{ v = localStorage.getItem('my-user-id'); }catch(e){}
+      if (v === null) throw new Error('not-found: ' + key);
+      return { key, value: v, shared: false };
+    }
+    if (key === 'levels-config'){
+      const snap = await getDoc(doc(db, 'meta', 'levels'));
+      if (!snap.exists()) throw new Error('not-found: ' + key);
+      return { key, value: JSON.stringify(snap.data().list), shared: true };
+    }
+    if (key.startsWith('users:')){
+      const userId = key.slice('users:'.length);
+      const snap = await getDoc(doc(db, 'users', userId));
+      if (!snap.exists()) throw new Error('not-found: ' + key);
+      return { key, value: JSON.stringify(snap.data()), shared: true };
+    }
+    throw new Error('unknown key: ' + key);
+  },
+  async set(key, value, shared){
+    if (key === 'my-user-id'){
+      try{ localStorage.setItem('my-user-id', value); }catch(e){}
+      return { key, value, shared: false };
+    }
+    if (key === 'levels-config'){
+      await setDoc(doc(db, 'meta', 'levels'), { list: JSON.parse(value) });
+      return { key, value, shared: true };
+    }
+    if (key.startsWith('users:')){
+      const userId = key.slice('users:'.length);
+      await setDoc(doc(db, 'users', userId), JSON.parse(value));
+      return { key, value, shared: true };
+    }
+    throw new Error('unknown key: ' + key);
+  },
+  async list(prefix, shared){
+    if (prefix === 'users:'){
+      const snap = await getDocs(collection(db, 'users'));
+      const keys = [];
+      snap.forEach(d => keys.push('users:' + d.id));
+      return { keys, prefix, shared: true };
+    }
+    throw new Error('unknown prefix: ' + prefix);
+  }
+};
+
+/* ---------- Progress (per-level subcollection: progress/{userId}/levels/{levelId}) ---------- */
+async function fetchProgress(userId){
+  const snap = await getDocs(collection(db, 'progress', userId, 'levels'));
+  const levels = {};
+  snap.forEach(d => { levels[d.id] = d.data(); });
+  return { levels };
+}
+async function markMemorized(userId, levelId){
+  const ref = doc(db, 'progress', userId, 'levels', String(levelId));
+  const snap = await getDoc(ref);
+  if (!snap.exists()){
+    await setDoc(ref, { memorized: true, reviewed: false, points: 0 });
+  } else {
+    await updateDoc(ref, { memorized: true });
+  }
+}
+async function adminReviewLevel(userId, levelId, points){
+  const ref = doc(db, 'progress', userId, 'levels', String(levelId));
+  await setDoc(ref, { memorized: true, reviewed: true, points });
+}
+
+/* ---------- Admin auth ---------- */
+async function adminSignIn(email, password){
+  await signInWithEmailAndPassword(auth, email, password);
+}
+async function adminSignOut(){
+  try{ await signOut(auth); }catch(e){}
+}
+
+const DEFAULT_LEVELS = [
+  { id: 1, title: "الرب راعيّ", ref: "مزمور 23: 1-2",
+    content: "اَلرَّبُّ رَاعِيَّ فَلاَ يُعْوِزُنِي شَيْءٌ.\nفِي مَرَاعٍ خُضْرٍ يُرْبِضُنِي. إِلَى مِيَاهِ الرَّاحَةِ يَوْرِدُنِي.",
+    points: 100, gift: "شهادة إتمام المستوى الأول" },
+  { id: 2, title: "المحبة العظمى", ref: "يوحنا 3: 16",
+    content: "لأَنَّهُ هَكَذَا أَحَبَّ اللهُ الْعَالَمَ حَتَّى بَذَلَ ابْنَهُ الْوَحِيدَ، لِكَيْ لاَ يَهْلِكَ كُلُّ مَنْ يُؤْمِنُ بِهِ بَلْ تَكُونُ لَهُ الْحَيَاةُ الأَبَدِيَّةُ.",
+    points: 100, gift: "شهادة إتمام المستوى الثاني" },
+  { id: 3, title: "الطوباوات", ref: "متى 5: 3-4",
+    content: "طُوبَى لِلْمَسَاكِينِ بِالرُّوحِ لأَنَّ لَهُمْ مَلَكُوتَ السَّمَاوَاتِ. طُوبَى لِلْحَزَانَى لأَنَّهُمْ يَتَعَزَّوْنَ.",
+    points: 100, gift: "شهادة إتمام المستوى الثالث" },
+  { id: 4, title: "كل الأشياء تعمل للخير", ref: "رومية 8: 28",
+    content: "وَنَحْنُ نَعْلَمُ أَنَّ كُلَّ الأَشْيَاءِ تَعْمَلُ مَعاً لِلْخَيْرِ لِلَّذِينَ يُحِبُّونَ اللهَ.",
+    points: 100, gift: "شهادة إتمام المستوى الرابع" },
+  { id: 5, title: "التوكل على الرب", ref: "أمثال 3: 5-6",
+    content: "تَوَكَّلْ عَلَى الرَّبِّ بِكُلِّ قَلْبِكَ، وَعَلَى فَهْمِكَ لاَ تَعْتَمِدْ. فِي كُلِّ طُرُقِكَ اعْرِفْهُ، وَهُوَ يُقَوِّمُ سُبُلَكَ.",
+    points: 100, gift: "شهادة إتمام المستوى الخامس" }
+];
+let LEVELS = [];
+
+const COUNTRIES = [
+  { name: "مصر", code: "+20", flag: "🇪🇬" },
+  { name: "السعودية", code: "+966", flag: "🇸🇦" },
+  { name: "الإمارات", code: "+971", flag: "🇦🇪" },
+  { name: "الكويت", code: "+965", flag: "🇰🇼" },
+  { name: "قطر", code: "+974", flag: "🇶🇦" },
+  { name: "البحرين", code: "+973", flag: "🇧🇭" },
+  { name: "عُمان", code: "+968", flag: "🇴🇲" },
+  { name: "الأردن", code: "+962", flag: "🇯🇴" },
+  { name: "لبنان", code: "+961", flag: "🇱🇧" },
+  { name: "سوريا", code: "+963", flag: "🇸🇾" },
+  { name: "العراق", code: "+964", flag: "🇮🇶" },
+  { name: "فلسطين", code: "+970", flag: "🇵🇸" },
+  { name: "اليمن", code: "+967", flag: "🇾🇪" },
+  { name: "ليبيا", code: "+218", flag: "🇱🇾" },
+  { name: "السودان", code: "+249", flag: "🇸🇩" }
+];
+
+const AVATARS = {
+  child: ["🧒","👦","👧","🐣","⭐","🦁"],
+  teen: ["🧑","👦🏻","👧🏻","🎒","📖","🎸"],
+  adult: ["👨","👩","🧔","👩‍🦱","🕊️","✝️"]
+};
+function avatarGroupForAge(age){
+  const n = Number(age);
+  if (!n || n < 13) return 'child';
+  if (n < 20) return 'teen';
+  return 'adult';
+}
+
+let state = { screen: 'loading', user: null, progress: null, currentLevel: null, adminUnlocked: false, adminUser: null, editingLevelId: null };
+
+/* ---------- Levels config (admin-managed) ---------- */
+async function loadLevels(){
+  try{
+    if (typeof window.storage === 'undefined') throw new Error('no-storage');
+    const r = await window.storage.get('levels-config', true);
+    if (r && r.value){
+      LEVELS = JSON.parse(r.value);
+      return;
+    }
+    LEVELS = DEFAULT_LEVELS.slice();
+    await window.storage.set('levels-config', JSON.stringify(LEVELS), true);
+  }catch(e){
+    console.error('loadLevels failed, using defaults in-memory:', e);
+    LEVELS = DEFAULT_LEVELS.slice();
+  }
+}
+async function saveLevels(){
+  try{
+    await window.storage.set('levels-config', JSON.stringify(LEVELS), true);
+  }catch(e){
+    console.error('saveLevels failed:', e);
+  }
+}
+
+function emptyProgress(){
+  const levels = {};
+  LEVELS.forEach(l => levels[l.id] = { memorized: false, reviewed: false, points: 0 });
+  return { levels };
+}
+function ensureProgressShape(progress){
+  LEVELS.forEach(l => { if (!progress.levels[l.id]) progress.levels[l.id] = { memorized:false, reviewed:false, points:0 }; });
+  return progress;
+}
+function totalPoints(progress){
+  let t = 0;
+  LEVELS.forEach(l => { const lv = progress.levels[l.id]; if (lv) t += (lv.points||0); });
+  return t;
+}
+function maxPointsAll(){ return LEVELS.reduce((s,l) => s + (Number(l.points)||0), 0); }
+function levelStatus(progress, id){
+  const lv = progress.levels[id];
+  if (lv.reviewed) return 'done';
+  const idx = LEVELS.findIndex(l => l.id === id);
+  if (idx === 0) return lv.memorized ? 'pending' : 'current';
+  const prevLevel = LEVELS[idx-1];
+  const prev = progress.levels[prevLevel.id];
+  if (!prev || !prev.reviewed) return 'locked';
+  return lv.memorized ? 'pending' : 'current';
+}
+
+/* ---------- Boot / user session ---------- */
+async function boot(){
+  await loadLevels();
+  if (window.location.hash === '#admin'){
+    state.viaAdminLink = true;
+    state.screen = 'admin-login';
+    render();
+    return;
+  }
+  try{
+    const ptr = await window.storage.get('my-user-id', false);
+    if (ptr && ptr.value){
+      await loadUser(ptr.value);
+      return;
+    }
+  }catch(e){}
+  state.screen = 'register';
+  render();
+}
+async function loadUser(userId){
+  try{
+    const u = await window.storage.get('users:' + userId, true);
+    state.user = u ? JSON.parse(u.value) : null;
+    state.progress = ensureProgressShape(await fetchProgress(userId));
+    state.userId = userId;
+    state.screen = 'path';
+  }catch(e){
+    state.screen = 'register';
+  }
+  render();
+}
+async function safeGet(key, shared){
+  try{ const r = await window.storage.get(key, shared); return r ? JSON.parse(r.value) : null; }
+  catch(e){ return null; }
+}
+
+async function registerUser(phone, fields){
+  const btn = document.getElementById('reg-submit');
+  if (btn){ btn.disabled = true; btn.textContent = 'جاري الحفظ...'; }
+  const userId = phone.replace(/\D/g,'') || ('u' + Date.now());
+  const pinHash = await hashPin(fields.pin);
+  const user = Object.assign({ phone, registeredAt: new Date().toISOString() }, fields, { pinHash });
+  delete user.pin;
+  if (user.photo && user.photo.length > 300000){
+    console.warn('photo too large even after compression, dropping it');
+    user.photo = null;
+  }
+  try{
+    const existing = await safeGet('users:' + userId, true);
+    if (existing){
+      const existingProgress = await fetchProgress(userId);
+      try{ await window.storage.set('my-user-id', userId, false); }catch(e2){}
+      state.user = existing;
+      state.progress = ensureProgressShape(existingProgress);
+      state.userId = userId;
+      state.screen = 'path';
+      render();
+      return;
+    }
+    await window.storage.set('users:' + userId, JSON.stringify(user), true);
+    await window.storage.set('my-user-id', userId, false);
+    state.user = user;
+    state.progress = emptyProgress();
+    state.userId = userId;
+    state.screen = 'path';
+    render();
+  }catch(e){
+    console.error('registration error, continuing without persistence:', e);
+    state.user = user;
+    state.progress = emptyProgress();
+    state.userId = userId;
+    state.storageDisabled = true;
+    state.storageError = (e && e.message) ? e.message : String(e);
+    state.screen = 'path';
+    render();
+  }
+}
+
+/* ---------- Render dispatcher ---------- */
+function render(){
+  const app = document.getElementById('app');
+  if (state.screen === 'loading'){ app.innerHTML = `<div class="empty">جاري التحميل...</div>`; return; }
+  if (state.screen === 'register'){ app.innerHTML = renderRegister(); attachRegisterEvents(); return; }
+  if (state.screen === 'login'){ app.innerHTML = renderLogin(); attachLoginEvents(); return; }
+  if (state.screen === 'path'){ app.innerHTML = renderPath(); attachPathEvents(); return; }
+  if (state.screen === 'level'){ app.innerHTML = renderLevel(); attachLevelEvents(); return; }
+  if (state.screen === 'admin-login'){ app.innerHTML = renderAdminLogin(); attachAdminLoginEvents(); return; }
+  if (state.screen === 'admin-list'){ app.innerHTML = renderAdminList(); attachAdminListEvents(); return; }
+  if (state.screen === 'admin-user'){ app.innerHTML = renderAdminUser(); attachAdminUserEvents(); return; }
+  if (state.screen === 'admin-levels'){ app.innerHTML = renderAdminLevels(); attachAdminLevelsEvents(); return; }
+}
+
+/* ---------- Register ---------- */
+function renderRegister(){
+  return `
+    <div class="brand">
+      <div class="seal">✝</div>
+      <h1>رحلة الحفظ</h1>
+      <p>مسابقة بينك وبين نفسك — خطوة بخطوة</p>
+    </div>
+    <div class="screen">
+      <div style="text-align:center; margin-bottom:16px;">
+        <button class="link-btn" id="go-login">عندك حساب قبل كده؟ سجّل الدخول برقم الهاتف</button>
+      </div>
+      <div class="field"><label>الاسم</label><input id="reg-name" placeholder="اكتب اسمك"></div>
+
+      <div class="field">
+        <label>النوع</label>
+        <div class="radio-row">
+          <div class="radio-opt selected" data-gender="ذكر">ذكر</div>
+          <div class="radio-opt" data-gender="أنثى">أنثى</div>
+        </div>
+      </div>
+
+      <div class="field"><label>السن *</label><input id="reg-age" type="number" min="1" placeholder="مثال: 14" inputmode="numeric"></div>
+
+      <div class="field">
+        <label>الصورة الشخصية (اختياري)</label>
+        <div class="avatar-grid" id="avatar-grid"></div>
+        <p class="avatar-hint">الاقتراحات بتتغيّر حسب السن اللي كتبته</p>
+      </div>
+
+      <div class="field">
+        <label>الدولة</label>
+        <select id="reg-country">
+          ${COUNTRIES.map((c, i) => `<option value="${i}">${c.flag} ${c.name} (${c.code})</option>`).join('')}
+        </select>
+      </div>
+      <div class="field">
+        <label>رقم الهاتف</label>
+        <div class="phone-row">
+          <span class="code-badge" id="phone-code-badge">${COUNTRIES[0].code}</span>
+          <input id="reg-phone" placeholder="1xxxxxxxxx" inputmode="numeric">
+        </div>
+      </div>
+
+      <div class="field"><label>كلمة سر (٤ أرقام) *</label><input id="reg-pin" type="password" inputmode="numeric" maxlength="4" placeholder="****"></div>
+      <p class="hint" style="margin-top:-10px; margin-bottom:16px;">هتستخدمها مع رقم هاتفك لو حبيت تدخل تاني من غير ما تسجّل بياناتك من الأول</p>
+
+      <div class="field"><label>البريد الإلكتروني (اختياري)</label><input id="reg-email" type="email" placeholder="example@mail.com"></div>
+
+      <div class="field">
+        <label>انت تابع لـ</label>
+        <select id="reg-affiliation-type">
+          <option value="كنيسة">كنيسة</option>
+          <option value="مدرسة">مدرسة</option>
+          <option value="أخرى">أخرى</option>
+        </select>
+      </div>
+      <div class="field"><label>اسم الكنيسة / المدرسة (اختياري)</label><input id="reg-affiliation-name" placeholder="اكتب الاسم"></div>
+
+      <div class="field"><label>الوظيفة / الدراسة (اختياري)</label><input id="reg-job" placeholder="مثال: طالب، مهندس..."></div>
+
+      <button class="btn btn-gold" id="reg-submit">ابدأ الرحلة</button>
+      <div id="reg-error" class="error"></div>
+      <p class="hint">بياناتك بتتحفظ عشان نقدر نتابع تقدمك ونديلك درجاتك بعد ما نسمعلك.</p>
+      <div class="admin-link"><button id="go-admin-reg">دخول المشرف</button></div>
+    </div>
+  `;
+}
+function attachRegisterEvents(){
+  let selectedGender = 'ذكر';
+  let selectedAvatar = AVATARS[avatarGroupForAge('')][0];
+
+  const countrySelect = document.getElementById('reg-country');
+  const badge = document.getElementById('phone-code-badge');
+  countrySelect.onchange = () => { badge.textContent = COUNTRIES[Number(countrySelect.value)].code; };
+
+  document.querySelectorAll('[data-gender]').forEach(el => {
+    el.onclick = () => {
+      document.querySelectorAll('[data-gender]').forEach(x => x.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedGender = el.dataset.gender;
+    };
+  });
+
+  function renderAvatarGrid(){
+    const age = document.getElementById('reg-age').value;
+    const group = avatarGroupForAge(age);
+    const grid = document.getElementById('avatar-grid');
+    if (!AVATARS[group].includes(selectedAvatar)) selectedAvatar = AVATARS[group][0];
+    grid.innerHTML = AVATARS[group].map(a =>
+      `<div class="avatar-opt ${a === selectedAvatar ? 'selected' : ''}" data-avatar="${a}">${a}</div>`
+    ).join('');
+    grid.querySelectorAll('.avatar-opt').forEach(el => {
+      el.onclick = () => {
+        selectedAvatar = el.dataset.avatar;
+        grid.querySelectorAll('.avatar-opt').forEach(x => x.classList.remove('selected'));
+        el.classList.add('selected');
+      };
+    });
+  }
+  renderAvatarGrid();
+  document.getElementById('reg-age').addEventListener('input', renderAvatarGrid);
+
+  document.getElementById('reg-submit').onclick = async () => {
+    const name = document.getElementById('reg-name').value.trim();
+    const age = document.getElementById('reg-age').value.trim();
+    const phoneDigits = document.getElementById('reg-phone').value.trim().replace(/\D/g,'').replace(/^0+/, '');
+    const email = document.getElementById('reg-email').value.trim();
+    const affiliationType = document.getElementById('reg-affiliation-type').value;
+    const affiliationName = document.getElementById('reg-affiliation-name').value.trim();
+    const job = document.getElementById('reg-job').value.trim();
+    const country = COUNTRIES[Number(countrySelect.value)];
+    const err = document.getElementById('reg-error');
+
+    if (!name || !phoneDigits){ err.textContent = 'من فضلك اكتب الاسم ورقم الهاتف'; return; }
+    if (!age || Number(age) <= 0){ err.textContent = 'السن إجباري، من فضلك اكتبه'; return; }
+    const pin = document.getElementById('reg-pin').value.trim();
+    if (!/^\d{4}$/.test(pin)){ err.textContent = 'كلمة السر لازم تكون ٤ أرقام بالظبط'; return; }
+    err.textContent = '';
+
+    const fields = {
+      name, age, gender: selectedGender,
+      photo: null,
+      avatar: selectedAvatar,
+      email, pin,
+      affiliationType, affiliationName, job,
+      country: country.name, countryCode: country.code
+    };
+    const fullPhone = country.code + phoneDigits;
+    try{
+      await registerUser(fullPhone, fields);
+    }catch(e){
+      console.error('unexpected registration failure:', e);
+      const btn = document.getElementById('reg-submit');
+      if (btn){ btn.disabled = false; btn.textContent = 'ابدأ الرحلة'; }
+      err.textContent = 'حصل خطأ غير متوقع، حاول تاني.';
+    }
+  };
+
+  document.getElementById('go-admin-reg').onclick = () => { state.screen = 'admin-login'; render(); };
+  document.getElementById('go-login').onclick = () => { state.screen = 'login'; render(); };
+}
+
+/* ---------- Login (returning user) ---------- */
+function renderLogin(){
+  return `
+    <div class="brand">
+      <div class="seal">✝</div>
+      <h1>رحلة الحفظ</h1>
+      <p>تسجيل الدخول</p>
+    </div>
+    <div class="screen">
+      <div class="field">
+        <label>الدولة</label>
+        <select id="login-country">
+          ${COUNTRIES.map((c, i) => `<option value="${i}">${c.flag} ${c.name} (${c.code})</option>`).join('')}
+        </select>
+      </div>
+      <div class="field">
+        <label>رقم الهاتف</label>
+        <div class="phone-row">
+          <span class="code-badge" id="login-code-badge">${COUNTRIES[0].code}</span>
+          <input id="login-phone" placeholder="1xxxxxxxxx" inputmode="numeric">
+        </div>
+      </div>
+      <div class="field"><label>كلمة السر (٤ أرقام)</label><input id="login-pin" type="password" inputmode="numeric" maxlength="4" placeholder="****"></div>
+      <button class="btn btn-gold" id="login-submit">دخول</button>
+      <div id="login-error" class="error"></div>
+      <div style="text-align:center; margin-top:16px;">
+        <button class="link-btn" id="go-register">لسه معندكش حساب؟ سجّل بياناتك</button>
+      </div>
+    </div>
+  `;
+}
+function attachLoginEvents(){
+  const countrySelect = document.getElementById('login-country');
+  const badge = document.getElementById('login-code-badge');
+  countrySelect.onchange = () => { badge.textContent = COUNTRIES[Number(countrySelect.value)].code; };
+
+  document.getElementById('go-register').onclick = () => { state.screen = 'register'; render(); };
+
+  document.getElementById('login-submit').onclick = async () => {
+    const err = document.getElementById('login-error');
+    const phoneDigits = document.getElementById('login-phone').value.trim().replace(/\D/g,'').replace(/^0+/, '');
+    const pin = document.getElementById('login-pin').value.trim();
+    const country = COUNTRIES[Number(countrySelect.value)];
+    if (!phoneDigits){ err.textContent = 'اكتب رقم هاتفك'; return; }
+    if (!/^\d{4}$/.test(pin)){ err.textContent = 'كلمة السر لازم تكون ٤ أرقام'; return; }
+    err.textContent = '';
+
+    const btn = document.getElementById('login-submit');
+    btn.disabled = true; btn.textContent = 'جاري الدخول...';
+
+    const fullPhone = country.code + phoneDigits;
+    const userId = fullPhone.replace(/\D/g,'');
+    try{
+      const existing = await safeGet('users:' + userId, true);
+      if (!existing){ err.textContent = 'الرقم ده مش مسجّل، سجّل بياناتك الأول'; btn.disabled = false; btn.textContent = 'دخول'; return; }
+      const hash = await hashPin(pin);
+      if (existing.pinHash !== hash){
+        err.textContent = 'كلمة السر غير صحيحة'; btn.disabled = false; btn.textContent = 'دخول'; return;
+      }
+      const existingProgress = await fetchProgress(userId);
+      try{ await window.storage.set('my-user-id', userId, false); }catch(e3){}
+      state.user = existing;
+      state.progress = ensureProgressShape(existingProgress);
+      state.userId = userId;
+      state.screen = 'path';
+      render();
+    }catch(e){
+      console.error('login failed:', e);
+      err.textContent = 'حصل خطأ، حاول تاني';
+      btn.disabled = false; btn.textContent = 'دخول';
+    }
+  };
+}
+
+/* ---------- Path ---------- */
+function renderPath(){
+  const pts = totalPoints(state.progress);
+  const maxPts = maxPointsAll();
+  const doneCount = LEVELS.filter(l => state.progress.levels[l.id] && state.progress.levels[l.id].reviewed).length;
+  const cards = LEVELS.map(l => {
+    const st = levelStatus(state.progress, l.id);
+    const lv = state.progress.levels[l.id];
+    const stLabel = { locked:'مقفول', current:'الحالي', pending:'بانتظار التسميع', done:'مكتمل' }[st];
+    return `
+      <div class="level-card ${st}" data-lvl="${l.id}">
+        <div class="lvl-top">
+          <div>
+            <div class="lvl-title">${l.title}</div>
+            <div class="lvl-ref">${l.ref || ''}</div>
+          </div>
+          <span class="lvl-status st-${st}">${stLabel}</span>
+        </div>
+        <div class="lvl-pts">${lv.points||0} / ${l.points} نقطة</div>
+      </div>
+    `;
+  }).join('');
+  return `
+    <div class="brand">
+      <div class="seal">${state.user.photo ? `<img src="${state.user.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : (state.user.avatar || '✝')}</div>
+      <h1>رحلة الحفظ</h1>
+      <p>${state.user.name} — ${state.user.country || ''} ${state.user.phone || ''}</p>
+    </div>
+    <div class="screen">
+      <div class="stats-bar">
+        <div class="who">أكملت ${doneCount} من ${LEVELS.length} مستويات</div>
+        <div class="pts"><b>${pts}</b><span>من ${maxPts} نقطة</span></div>
+      </div>
+      <div class="path">${cards || '<div class="empty">مفيش مستويات مضافة لسه</div>'}</div>
+      ${state.storageDisabled ? `<div class="status-banner pending" style="margin-bottom:16px;">⚠️ تنبيه: بياناتك اتسجّلت مؤقتًا بس، ومش هتظهر عند المشرف ولا هتتفتكر لو قفلت الصفحة.${state.storageError ? `<br><span style="font-size:.7rem; opacity:.8;">تفاصيل تقنية: ${state.storageError}</span>` : ''}</div>` : ''}
+      <div class="admin-link"><button id="go-admin">دخول المشرف</button></div>
+    </div>
+  `;
+}
+function attachPathEvents(){
+  document.querySelectorAll('.level-card').forEach(card => {
+    card.onclick = () => {
+      const id = Number(card.dataset.lvl);
+      const st = levelStatus(state.progress, id);
+      if (st === 'locked') return;
+      state.currentLevel = id;
+      state.screen = 'level';
+      render();
+    };
+  });
+  document.getElementById('go-admin').onclick = () => { state.screen = 'admin-login'; render(); };
+}
+
+/* ---------- Level detail ---------- */
+function renderLevel(){
+  const l = LEVELS.find(x => x.id === state.currentLevel);
+  const lv = state.progress.levels[l.id];
+
+  let statusArea = '';
+  if (!lv.memorized){
+    statusArea = `
+      <div class="memorize-box">
+        <p>خلصت تحفظ الجزء ده؟ اضغط الزر وهيتم التواصل معاك برة التطبيق عشان نسمعلك ونضيف درجاتك.</p>
+        <button class="btn btn-green" id="mark-memorized">أنا حفظت هذا الجزء ✅</button>
+      </div>
+    `;
+  } else if (lv.memorized && !lv.reviewed){
+    statusArea = `<div class="status-banner pending">بانتظار التسميع — هيتواصل معاك المسؤول قريبًا ويضيف درجاتك</div>`;
+  } else if (lv.reviewed){
+    statusArea = `
+      <div class="status-banner done">تم التسميع بنجاح 🎉 نقاطك في المستوى: ${lv.points||0} / ${l.points}</div>
+      <div class="gift-card">
+        <div class="ring">✅</div>
+        <h4>مبروك! استلمت هديتك: ${l.gift || 'هدية المستوى'}</h4>
+        <p>تواصل مع المسؤول لو لسه ما استلمتهاش فعليًا.</p>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="screen">
+      <div class="back-row"><button id="back-path">← رجوع للمسار</button></div>
+      <div class="verse-card">
+        <div class="verse-ref">${l.ref || l.title}</div>
+        <div class="verse-text">${l.content}</div>
+      </div>
+      <div class="gift-card" style="margin-top:0; margin-bottom:18px;">
+        <div class="ring">🎁</div>
+        <h4>هدية هذا المستوى: ${l.gift || '—'}</h4>
+        <p>هتاخدها لما تخلص الحفظ ويتم تسميعك وتراجع درجاتك.</p>
+      </div>
+      ${statusArea}
+    </div>
+  `;
+}
+function attachLevelEvents(){
+  document.getElementById('back-path').onclick = () => { state.screen = 'path'; render(); };
+  const memBtn = document.getElementById('mark-memorized');
+  if (memBtn){
+    memBtn.onclick = async () => {
+      memBtn.disabled = true; memBtn.textContent = 'جاري الحفظ...';
+      try{
+        await markMemorized(state.userId, state.currentLevel);
+        state.progress.levels[state.currentLevel].memorized = true;
+      }catch(e){
+        console.error('mark memorized failed:', e);
+      }
+      render();
+    };
+  }
+}
+
+/* ---------- Admin ---------- */
+function renderAdminLogin(){
+  return `
+    <div class="brand">
+      <div class="seal">🔑</div>
+      <h1>لوحة المشرف</h1>
+      <p>رحلة الحفظ — إدارة عن بُعد</p>
+    </div>
+    <div class="screen">
+      ${state.viaAdminLink ? '' : '<div class="back-row"><button id="back-path2">← رجوع</button></div>'}
+      <div class="field"><label>البريد الإلكتروني</label><input id="admin-email" type="email" placeholder="admin@example.com"></div>
+      <div class="field"><label>كلمة المرور</label><input id="admin-pass" type="password" placeholder="••••••••"></div>
+      <button class="btn btn-gold" id="admin-submit">دخول</button>
+      <div id="admin-error" class="error"></div>
+    </div>
+  `;
+}
+function attachAdminLoginEvents(){
+  const backBtn = document.getElementById('back-path2');
+  if (backBtn) backBtn.onclick = () => { state.screen = state.user ? 'path' : 'register'; render(); };
+  document.getElementById('admin-submit').onclick = async () => {
+    const email = document.getElementById('admin-email').value.trim();
+    const pass = document.getElementById('admin-pass').value;
+    const err = document.getElementById('admin-error');
+    const btn = document.getElementById('admin-submit');
+    if (!email || !pass){ err.textContent = 'اكتب البريد وكلمة المرور'; return; }
+    err.textContent = '';
+    btn.disabled = true; btn.textContent = 'جاري الدخول...';
+    try{
+      await adminSignIn(email, pass);
+      state.adminUnlocked = true;
+      state.screen = 'admin-list';
+      await loadAllUsers();
+      render();
+    }catch(e){
+      console.error('admin sign-in failed:', e);
+      err.textContent = 'بيانات الدخول غير صحيحة';
+      btn.disabled = false; btn.textContent = 'دخول';
+    }
+  };
+}
+
+async function loadAllUsers(){
+  state.allUsers = [];
+  try{
+    const list = await window.storage.list('users:', true);
+    if (list && list.keys){
+      for (const key of list.keys){
+        const u = await safeGet(key, true);
+        const userId = key.replace('users:', '');
+        if (u) state.allUsers.push({ userId, user: u });
+      }
+    }
+  }catch(e){ console.error('loadAllUsers failed:', e); }
+}
+
+function exportUsersCsv(){
+  const rows = [['الاسم','الهاتف','الدولة','السن','النوع','الإيميل','الوظيفة','تابع لـ']];
+  (state.allUsers || []).forEach(u => {
+    rows.push([u.user.name||'', u.user.phone||'', u.user.country||'', u.user.age||'', u.user.gender||'', u.user.email||'', u.user.job||'', u.user.affiliationName||'']);
+  });
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'المتسابقين.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function renderAdminList(){
+  const filterText = (state.adminFilter || '').trim();
+  const filtered = !filterText ? (state.allUsers||[]) : (state.allUsers||[]).filter(u =>
+    (u.user.name||'').includes(filterText) || (u.user.phone||'').includes(filterText) || (u.user.country||'').includes(filterText)
+  );
+  const body = (!filtered || filtered.length === 0)
+    ? `<div class="empty">لا يوجد نتائج</div>`
+    : filtered.map(u => `
+        <div class="user-row" data-uid="${u.userId}">
+          <div class="nm">${u.user.name}</div>
+          <div class="ph">${u.user.country ? u.user.country + ' — ' : ''}${u.user.phone}</div>
+        </div>
+      `).join('');
+  const countryCounts = {};
+  (state.allUsers||[]).forEach(u => { const c = u.user.country || 'غير محدد'; countryCounts[c] = (countryCounts[c]||0)+1; });
+  const countryStats = Object.entries(countryCounts).map(([c,n]) => `${c}: ${n}`).join(' &nbsp;•&nbsp; ');
+  return `
+    ${state.viaAdminLink ? `<div class="brand"><div class="seal">🔑</div><h1>لوحة المشرف</h1><p>رحلة الحفظ — إدارة عن بُعد</p></div>` : ''}
+    <div class="screen">
+      ${state.viaAdminLink ? '' : '<div class="back-row"><button id="back-path3">← رجوع</button></div>'}
+      <div class="btn-row" style="margin-bottom:12px;">
+        <button class="btn btn-outline" id="go-manage-levels">إدارة المستويات</button>
+        <button class="btn btn-outline" id="refresh-users">تحديث</button>
+      </div>
+      <div class="btn-row" style="margin-bottom:20px;">
+        <button class="btn btn-outline" id="export-csv">تصدير Excel/CSV</button>
+        <button class="btn btn-danger" id="admin-logout">تسجيل خروج</button>
+      </div>
+      <div class="stats-bar" style="flex-direction:column; align-items:flex-start; gap:6px;">
+        <div class="who">إجمالي المسجلين: ${(state.allUsers||[]).length}</div>
+        <div class="hint" style="margin:0;">${countryStats || 'مفيش بيانات دول لسه'}</div>
+      </div>
+      <div class="field" style="margin-top:16px;"><input id="admin-search" placeholder="دور بالاسم / الرقم / الدولة..." value="${filterText}"></div>
+      <div class="section-title">المستخدمون المسجلون</div>
+      ${body}
+    </div>
+  `;
+}
+function attachAdminListEvents(){
+  const backBtn = document.getElementById('back-path3');
+  if (backBtn) backBtn.onclick = () => { state.screen = state.user ? 'path' : 'register'; render(); };
+  document.getElementById('go-manage-levels').onclick = () => { state.editingLevelId = null; state.screen = 'admin-levels'; render(); };
+  document.getElementById('refresh-users').onclick = async () => {
+    const btn = document.getElementById('refresh-users');
+    btn.disabled = true; btn.textContent = 'جاري التحديث...';
+    await loadAllUsers();
+    render();
+  };
+  document.getElementById('export-csv').onclick = () => exportUsersCsv();
+  document.getElementById('admin-logout').onclick = async () => {
+    await adminSignOut();
+    state.adminUnlocked = false;
+    state.screen = state.user ? 'path' : 'register';
+    render();
+  };
+  const searchInput = document.getElementById('admin-search');
+  searchInput.oninput = () => {
+    state.adminFilter = searchInput.value;
+    render();
+    const fresh = document.getElementById('admin-search');
+    if (fresh){ fresh.focus(); fresh.setSelectionRange(fresh.value.length, fresh.value.length); }
+  };
+  document.querySelectorAll('.user-row').forEach(row => {
+    row.onclick = async () => {
+      const base = state.allUsers.find(u => u.userId === row.dataset.uid);
+      state.adminUser = { userId: base.userId, user: base.user, progress: ensureProgressShape(await fetchProgress(base.userId)) };
+      state.screen = 'admin-user';
+      render();
+    };
+  });
+}
+
+function renderAdminUser(){
+  const au = state.adminUser;
+  const rows = LEVELS.map(l => {
+    const lv = au.progress.levels[l.id] || { memorized:false, reviewed:false, points:0 };
+    let statusText = 'لم يبدأ بعد';
+    if (lv.reviewed) statusText = 'تمت المراجعة ✅';
+    else if (lv.memorized) statusText = 'حفظ وبانتظار التسميع';
+    return `
+      <div class="admin-level">
+        <div class="t">${l.title} <span style="color:var(--muted); font-weight:400;">(${l.ref||''})</span></div>
+        <div class="s">${statusText}</div>
+        ${!lv.reviewed ? `
+          <div class="row2">
+            <div class="field">
+              <label>الدرجات بعد التسميع (من ${l.points})</label>
+              <input type="number" min="0" max="${l.points}" id="recite-${l.id}" value="${lv.points||0}">
+            </div>
+          </div>
+          <div style="height:10px;"></div>
+          <button class="btn btn-green" data-review="${l.id}">حفظ الدرجة وتأكيد المراجعة</button>
+        ` : `<div style="color:var(--gold-bright); font-size:.8rem;">النقاط: ${lv.points}/${l.points}</div>`}
+      </div>
+    `;
+  }).join('');
+  return `
+    <div class="screen">
+      <div class="back-row"><button id="back-admin-list">← رجوع لكل المستخدمين</button></div>
+      <div class="section-title">${au.user.name} — ${au.user.phone}</div>
+      <div class="admin-level">
+        ${au.user.gender ? `<b>النوع:</b> ${au.user.gender} &nbsp; ` : ''}
+        ${au.user.age ? `<b>السن:</b> ${au.user.age} &nbsp; ` : ''}
+        ${au.user.country ? `<b>الدولة:</b> ${au.user.country}` : ''}<br>
+        ${au.user.email ? `<b>الإيميل:</b> ${au.user.email} &nbsp; ` : ''}
+        ${au.user.job ? `<b>الوظيفة:</b> ${au.user.job}` : ''}<br>
+        ${au.user.affiliationName ? `<b>${au.user.affiliationType || 'تابع لـ'}:</b> ${au.user.affiliationName}` : ''}
+      </div>
+      ${rows}
+    </div>
+  `;
+}
+function attachAdminUserEvents(){
+  document.getElementById('back-admin-list').onclick = () => { state.screen = 'admin-list'; render(); };
+  document.querySelectorAll('[data-review]').forEach(btn => {
+    btn.onclick = async () => {
+      const lid = Number(btn.dataset.review);
+      const level = LEVELS.find(l => l.id === lid);
+      const input = document.getElementById('recite-' + lid);
+      let pts = Number(input.value);
+      if (isNaN(pts) || pts < 0) pts = 0;
+      if (pts > level.points) pts = level.points;
+      btn.disabled = true; btn.textContent = 'جاري الحفظ...';
+      const au = state.adminUser;
+      try{
+        await adminReviewLevel(au.userId, lid, pts);
+        au.progress.levels[lid] = { memorized:true, reviewed:true, points:pts };
+      }catch(e){
+        console.error('admin save failed:', e);
+        alert('فشل حفظ الدرجة — تأكد إنك لسه مسجّل دخول كمشرف');
+      }
+      render();
+    };
+  });
+}
+
+/* ---------- Admin: manage levels ---------- */
+function renderAdminLevels(){
+  const editing = state.editingLevelId ? LEVELS.find(l => l.id === state.editingLevelId) : null;
+  const list = LEVELS.map(l => `
+    <div class="cfg-level">
+      <div class="t">${l.title}</div>
+      <div class="r">${l.ref || ''}</div>
+      <div class="c">${l.content}</div>
+      <div class="meta">النقاط: ${l.points} &nbsp; | &nbsp; الهدية: ${l.gift || '—'}</div>
+      <div class="btn-row">
+        <button class="btn btn-outline btn-small" data-edit="${l.id}">تعديل</button>
+        <button class="btn btn-danger btn-small" data-delete="${l.id}">حذف</button>
+      </div>
+    </div>
+  `).join('');
+  return `
+    <div class="screen">
+      <div class="back-row"><button id="back-admin-list2">← رجوع</button></div>
+      <div class="section-title">المستويات الحالية</div>
+      ${list || '<div class="empty">لسه مفيش مستويات</div>'}
+
+      <div class="section-title">${editing ? 'تعديل مستوى' : 'إضافة مستوى جديد'}</div>
+      <div class="field"><label>عنوان المستوى</label><input id="lvl-title" value="${editing ? editing.title.replace(/"/g,'&quot;') : ''}" placeholder="مثال: الرب راعيّ"></div>
+      <div class="field"><label>المرجع / الوصف (اختياري)</label><input id="lvl-ref" value="${editing ? (editing.ref||'').replace(/"/g,'&quot;') : ''}" placeholder="مثال: مزمور 23: 1-2"></div>
+      <div class="field"><label>النص المطلوب حفظه</label><textarea id="lvl-content" placeholder="اكتب النص هنا">${editing ? editing.content : ''}</textarea></div>
+      <div class="field"><label>عدد نقاط المستوى</label><input id="lvl-points" type="number" min="1" value="${editing ? editing.points : 100}"></div>
+      <div class="field"><label>هدية المستوى عند اكتماله</label><input id="lvl-gift" value="${editing ? (editing.gift||'').replace(/"/g,'&quot;') : ''}" placeholder="مثال: كتاب، ميدالية..."></div>
+
+      <div class="btn-row">
+        <button class="btn btn-gold" id="lvl-save">${editing ? 'حفظ التعديل' : 'إضافة المستوى'}</button>
+        ${editing ? '<button class="btn btn-outline" id="lvl-cancel">إلغاء</button>' : ''}
+      </div>
+      <div id="lvl-error" class="error"></div>
+    </div>
+  `;
+}
+function attachAdminLevelsEvents(){
+  document.getElementById('back-admin-list2').onclick = () => { state.editingLevelId = null; state.screen = 'admin-list'; render(); };
+
+  document.querySelectorAll('[data-edit]').forEach(btn => {
+    btn.onclick = () => { state.editingLevelId = Number(btn.dataset.edit); render(); };
+  });
+  document.querySelectorAll('[data-delete]').forEach(btn => {
+    btn.onclick = async () => {
+      const id = Number(btn.dataset.delete);
+      LEVELS = LEVELS.filter(l => l.id !== id);
+      await saveLevels();
+      if (state.editingLevelId === id) state.editingLevelId = null;
+      render();
+    };
+  });
+
+  const cancelBtn = document.getElementById('lvl-cancel');
+  if (cancelBtn) cancelBtn.onclick = () => { state.editingLevelId = null; render(); };
+
+  document.getElementById('lvl-save').onclick = async () => {
+    const title = document.getElementById('lvl-title').value.trim();
+    const ref = document.getElementById('lvl-ref').value.trim();
+    const content = document.getElementById('lvl-content').value.trim();
+    const points = Number(document.getElementById('lvl-points').value);
+    const gift = document.getElementById('lvl-gift').value.trim();
+    const err = document.getElementById('lvl-error');
+
+    if (!title || !content){ err.textContent = 'من فضلك اكتب العنوان والنص المطلوب حفظه'; return; }
+    if (!points || points <= 0){ err.textContent = 'من فضلك حدد عدد نقاط صحيح'; return; }
+    err.textContent = '';
+
+    if (state.editingLevelId){
+      const lvl = LEVELS.find(l => l.id === state.editingLevelId);
+      lvl.title = title; lvl.ref = ref; lvl.content = content; lvl.points = points; lvl.gift = gift;
+    } else {
+      const newId = LEVELS.length ? Math.max(...LEVELS.map(l => l.id)) + 1 : 1;
+      LEVELS.push({ id: newId, title, ref, content, points, gift });
+    }
+    await saveLevels();
+    state.editingLevelId = null;
+    render();
+  };
+}
+
+boot();
+</script>
+</body>
+</html>
