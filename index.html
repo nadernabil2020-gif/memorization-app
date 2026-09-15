@@ -780,7 +780,11 @@ function renderPath(){
       </div>
       <div class="path">${cards || '<div class="empty">مفيش مستويات مضافة لسه</div>'}</div>
       ${state.storageDisabled ? `<div class="status-banner pending" style="margin-bottom:16px;">⚠️ تنبيه: بياناتك اتسجّلت مؤقتًا بس، ومش هتظهر عند المشرف ولا هتتفتكر لو قفلت الصفحة.${state.storageError ? `<br><span style="font-size:.7rem; opacity:.8;">تفاصيل تقنية: ${state.storageError}</span>` : ''}</div>` : ''}
-      <div class="admin-link"><button id="go-admin">دخول المشرف</button></div>
+      <div class="admin-link">
+        <button id="go-admin">دخول المشرف</button>
+        &nbsp;•&nbsp;
+        <button id="switch-user">مش أنت؟ سجّل بيانات جديدة</button>
+      </div>
     </div>
   `;
 }
@@ -796,6 +800,14 @@ function attachPathEvents(){
     };
   });
   document.getElementById('go-admin').onclick = () => { state.screen = 'admin-login'; render(); };
+  document.getElementById('switch-user').onclick = () => {
+    try{ localStorage.removeItem('my-user-id'); }catch(e){}
+    state.user = null;
+    state.progress = null;
+    state.userId = null;
+    state.screen = 'register';
+    render();
+  };
 }
 
 /* ---------- Level detail ---------- */
